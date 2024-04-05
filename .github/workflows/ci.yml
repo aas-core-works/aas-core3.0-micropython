@@ -26,15 +26,16 @@ jobs:
         run: |
           python3 -m pip install --upgrade pip
           pip3 install -r requirements-dev.txt
+          pip3 install -e .
+
+      - name: Run pre-commit
+        run: |
+          python3 continuous_integration/precommit.py
 
       - name: Install MicroPython
         uses: BrianPugh/install-micropython@v1
         with:
           reference: v1.20.0
-
-      - name: Run pre-commit
-        run: |
-          python3 continuous_integration/precommit.py
 
       - name: Run tests
         run: |
