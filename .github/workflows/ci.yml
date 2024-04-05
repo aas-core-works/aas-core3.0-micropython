@@ -27,7 +27,11 @@ jobs:
           python3 -m pip install --upgrade pip
           pip3 install --upgrade coveralls
           pip3 install -e .
-          apt install micropython
+
+      - name: Install MicroPython
+        uses: BrianPugh/install-micropython@v1
+        with:
+          reference: v1.20.0
 
       - name: Run pre-commit
         run: |
