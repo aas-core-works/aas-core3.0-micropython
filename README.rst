@@ -2,6 +2,10 @@
 aas-core3.0-micropython
 ***********************
 
+.. image:: https://github.com/aas-core-works/aas-core3.0-micropython/actions/workflows/ci.yml/badge.svg
+    :target: https://github.com/aas-core-works/aas-core3.0-micropython/actions/workflows/ci.yml
+    :alt: Continuous integration
+
 Manipulate, verify and de/serialize asset administration shells in Micropython. 
 
 This is a semantically patched version of the `aas-core3.0-python`_ SDK so that it can run in the Micropython environment.
