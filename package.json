@@ -1,0 +1,13 @@
+{
+  "urls": [
+    ["aas_core3/__init__.py", "github:aas-core-works/aas-core3.0-micropython/aas_core3/__init__.py"],
+    ["aas_core3/common.py", "github:aas-core-works/aas-core3.0-micropython/aas_core3/common.py"],
+    ["aas_core3/constants.py", "github:aas-core-works/aas-core3.0-micropython/aas_core3/constants.py"],
+    ["aas_core3/enum.py", "github:aas-core-works/aas-core3.0-micropython/aas_core3/enum.py"],
+    ["aas_core3/jsonization.py", "github:aas-core-works/aas-core3.0-micropython/aas_core3/jsonization.py"],
+    ["aas_core3/stringification.py", "github:aas-core-works/aas-core3.0-micropython/aas_core3/stringification.py"],
+    ["aas_core3/types.py", "github:aas-core-works/aas-core3.0-micropython/aas_core3/types.py"]
+  ],
+  "deps": [],
+  "version": "1.0.3"
+}
