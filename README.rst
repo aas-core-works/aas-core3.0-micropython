@@ -26,3 +26,18 @@ Due to the limitations we had to **exclude**:
 Versioning
 ==========
 We follow the versioning of the original SDK that we patched.
+
+Installation
+============
+We provide a [package.json](package.json), so you can directly install using `mpremote` from this repository:
+
+.. code-block::
+
+   mpremote mip install github:aas-core-works/aas-core3.0-micropython
+
+... or using `mip`:
+
+.. code-block::
+
+   micropython -m mip install github:aas-core-works/aas-core3.0-micropython
+
