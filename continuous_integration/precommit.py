@@ -19,7 +19,6 @@ class Step(enum.Enum):
 
     REFORMAT = "reformat"
     PYLINT = "pylint"
-    CHECK_INIT_AND_SETUP_COINCIDE = "check-init-and-setup-coincide"
 
 
 def call_and_report(
@@ -105,7 +104,6 @@ def main() -> int:
             "continuous_integration",
             "dev_scripts",
             "tests",
-            "setup.py",
         ]
 
         if overwrite:
@@ -144,24 +142,6 @@ def main() -> int:
             return 1
     else:
         print("Skipped pylint'ing.")
-
-    if (
-        Step.CHECK_INIT_AND_SETUP_COINCIDE in selects
-        and Step.CHECK_INIT_AND_SETUP_COINCIDE not in skips
-    ):
-        print("Checking that aas_core3/__init__.py and setup.py coincide...")
-        exit_code = call_and_report(
-            verb="check that aas_core3/__init__.py and setup.py coincide",
-            cmd=[
-                sys.executable,
-                "continuous_integration/check_init_and_setup_coincide.py",
-            ],
-            cwd=repo_root,
-        )
-        if exit_code != 0:
-            return 1
-    else:
-        print("Skipped checking that aas_core3/__init__.py and setup.py coincide.")
 
     return 0
 
