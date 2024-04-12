@@ -10,6 +10,7 @@ sys.path.insert(0, os.getenv("AAS_CORE3_MICROPYTHON_REPO"))
 
 import aas_core3.types as aas_types
 import aas_core3.jsonization as aas_jsonization
+import aas_core3.xmlization as aas_xmlization
 
 
 def test_create_get_set():
@@ -167,9 +168,6 @@ def test_jsonization_deserialize():
 
 
 def test_xmlization_serialize():
-    import aas_core3.types as aas_types
-    import aas_core3.xmlization as aas_xmlization
-
     # Prepare the environment
     environment = aas_types.Environment(
         submodels=[
@@ -200,4 +198,3 @@ if __name__ == "__main__":
     test_jsonization_deserialize()
     test_jsonization_serialize()
     test_xmlization_serialize()
-    

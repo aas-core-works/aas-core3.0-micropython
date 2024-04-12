@@ -55,7 +55,9 @@ Create, Get and Set Properties of an AAS Model
 ----------------------------------------------
 .. code-block:: python
 
-	# Create the first element
+    import aas_core3.types as aas_types
+
+    # Create the first element
     some_element = aas_types.Property(
         id_short="some_property", value_type=aas_types.DataTypeDefXSD.INT, value="1984"
     )
@@ -90,7 +92,9 @@ Iterate and Transform
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. code-block:: python
 
-	# Prepare the environment
+    import aas_core3.types as aas_types
+
+    # Prepare the environment
     environment = aas_types.Environment(
         submodels=[
             aas_types.Submodel(
@@ -123,7 +127,183 @@ Iterate and Transform
         ):
             print(something.id_short)
 
-	# Prints:
-	# another_property
-	# yet_another_property
+    # Prints:
+    # another_property
+    # yet_another_property
 
+Visitor
+^^^^^^^
+
+.. code-block:: python
+
+    import aas_core3.types as aas_types
+
+    class Visitor(aas_types.PassThroughVisitor):
+    def visit_property(self, that: aas_types.Property):
+        if "another" in that.id_short:
+            print(that.id_short)
+
+    # Prepare the environment
+    environment = aas_types.Environment(
+        submodels=[
+            aas_types.Submodel(
+                id="some-unique-global-identifier",
+                submodel_elements=[
+                    aas_types.Property(
+                        id_short="some_property",
+                        value_type=aas_types.DataTypeDefXSD.INT,
+                        value="1984",
+                    ),
+                    aas_types.Property(
+                        id_short="another_property",
+                        value_type=aas_types.DataTypeDefXSD.INT,
+                        value="1985",
+                    ),
+                    aas_types.Property(
+                        id_short="yet_another_property",
+                        value_type=aas_types.DataTypeDefXSD.INT,
+                        value="1986",
+                    ),
+                ],
+            )
+        ]
+    )
+
+    # Iterate
+    visitor = Visitor()
+    visitor.visit(environment)
+
+    # Prints
+    # another_property
+    # yet_another_property
+
+JSON Serialization
+------------------
+.. code-block:: python
+
+    import aas_core3.types as aas_types
+    import aas_core3.jsonization as aas_jsonization
+    
+    # Prepare the environment
+    environment = aas_types.Environment(
+        submodels=[
+            aas_types.Submodel(
+                id="some-unique-global-identifier",
+                submodel_elements=[
+                    aas_types.Property(
+                        id_short="some_property",
+                        value_type=aas_types.DataTypeDefXSD.INT,
+                        value="1984",
+                    )
+                ],
+            )
+        ]
+    )
+
+    # Serialize to a JSON-able mapping
+    jsonable = aas_jsonization.to_jsonable(environment)
+
+    # Print the mapping as text
+    print(json.dumps(jsonable))
+
+    # Prints (as a continuous string without newlines and indention)
+    # {
+    #   "submodels": [
+    #     {
+    #       "id": "some-unique-global-identifier",
+    #       "submodelElements": [
+    #         {
+    #           "idShort": "some_property",
+    #           "valueType": "xs:int",
+    #           "value": "1984",
+    #           "modelType": "Property"
+    #         }
+    #       ],
+    #       "modelType": "Submodel"
+    #     }
+    #   ]
+    # }
+
+JSON De-serialization
+---------------------
+.. code-block:: python
+
+    import aas_core3.types as aas_types
+    import aas_core3.jsonization as aas_jsonization
+
+	    text = """\
+        {
+          "submodels": [
+            {
+              "id": "some-unique-global-identifier",
+              "submodelElements": [
+                {
+                  "idShort": "someProperty",
+                  "valueType": "xs:boolean",
+                  "modelType": "Property"
+                }
+              ],
+              "modelType": "Submodel"
+            }
+          ]
+        }"""
+
+    jsonable = json.loads(text)
+
+    environment = aas_jsonization.environment_from_jsonable(jsonable)
+
+    for something in environment.descend():
+        print(type(something))
+
+    # Prints
+    # <class 'aas_core3.types.Submodel'>
+	# <class 'aas_core3.types.Property'>
+
+XML Serialization
+-----------------
+
+.. code-block:: python
+
+    import aas_core3.types as aas_types
+    import aas_core3.xmlization as aas_xmlization
+
+    # Prepare the environment
+    environment = aas_types.Environment(
+        submodels=[
+            aas_types.Submodel(
+                id="some-unique-global-identifier",
+                submodel_elements=[
+                    aas_types.Property(
+                        id_short="some_property",
+                        value_type=aas_types.DataTypeDefXSD.INT,
+                        value="1984",
+                    )
+                ],
+            )
+        ]
+    )
+
+    # Serialize to an XML-encoded string
+    text = aas_xmlization.to_str(environment)
+
+    print(text)
+
+    # Prints (without the newlines and indention)
+    # <environment xmlns="https://admin-shell.io/aas/3/0">
+    #   <submodels>
+    #     <submodel>
+    #       <id>some-unique-global-identifier</id>
+    #       <submodelElements>
+    #         <property>
+    #           <idShort>some_property</idShort>
+    #           <valueType>xs:int</valueType>
+    #           <value>1984</value>
+    #         </property>
+    #       </submodelElements>
+    #     </submodel>
+    #   </submodels>
+    # </environment>
+
+XML De-serialization
+--------------------
+As we noted above, there is no mature XML library for Micropython so we could not adapt the original code.
