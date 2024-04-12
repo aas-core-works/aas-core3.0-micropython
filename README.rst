@@ -53,7 +53,8 @@ Please refer to `the original documentation of aas-core3.0-python`_ for more con
 
 Create, Get and Set Properties of an AAS Model
 ----------------------------------------------
-.. code-block:: python
+
+.. code-block::
 
     import aas_core3.types as aas_types
 
@@ -90,7 +91,8 @@ Iterate and Transform
 ---------------------
 ``descend`` and ``descend_once``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. code-block:: python
+
+.. code-block::
 
     import aas_core3.types as aas_types
 
@@ -134,7 +136,7 @@ Iterate and Transform
 Visitor
 ^^^^^^^
 
-.. code-block:: python
+.. code-block::
 
     import aas_core3.types as aas_types
 
@@ -179,7 +181,8 @@ Visitor
 
 JSON Serialization
 ------------------
-.. code-block:: python
+
+.. code-block::
 
     import aas_core3.types as aas_types
     import aas_core3.jsonization as aas_jsonization
@@ -226,7 +229,8 @@ JSON Serialization
 
 JSON De-serialization
 ---------------------
-.. code-block:: python
+
+.. code-block::
 
     import aas_core3.types as aas_types
     import aas_core3.jsonization as aas_jsonization
@@ -262,7 +266,7 @@ JSON De-serialization
 XML Serialization
 -----------------
 
-.. code-block:: python
+.. code-block::
 
     import aas_core3.types as aas_types
     import aas_core3.xmlization as aas_xmlization
