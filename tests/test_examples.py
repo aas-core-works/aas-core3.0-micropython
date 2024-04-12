@@ -128,8 +128,35 @@ def test_jsonization_deserialize():
         print(type(something))
 
 
+def test_xmlization_serialize():
+    import aas_core3.types as aas_types
+    import aas_core3.xmlization as aas_xmlization
+
+    # Prepare the environment
+    environment = aas_types.Environment(
+        submodels=[
+            aas_types.Submodel(
+                id="some-unique-global-identifier",
+                submodel_elements=[
+                    aas_types.Property(
+                        id_short="some_property",
+                        value_type=aas_types.DataTypeDefXSD.INT,
+                        value="1984",
+                    )
+                ],
+            )
+        ]
+    )
+
+    # Serialize to an XML-encoded string
+    text = aas_xmlization.to_str(environment)
+
+    print(text)
+
+
 if __name__ == "__main__":
     test_create_get_set()
     test_descend_and_descend_once()
     test_jsonization_serialize()
     test_jsonization_deserialize()
+    test_jsonization_serialize()

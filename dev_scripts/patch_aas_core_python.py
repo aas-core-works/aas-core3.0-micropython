@@ -12,6 +12,7 @@ import tokenize
 from typing import Optional, Tuple, List, Sequence, Union
 
 import asttokens
+from icontract import ensure
 
 from dev_scripts import patching
 
@@ -581,8 +582,20 @@ if sys.version_info >= (3, 8):
 else:
     from typing_extensions import Final"""
 
+_CONDITIONAL_DEFINITION_OF_PATH_LIKE_ON_TYPE_CHECKING = """\
+if TYPE_CHECKING:
+    PathLike = os.PathLike[Any]
+else:
+    PathLike = os.PathLike"""
 
-def _is_conditional_import_of_typing_final(
+_CONDITIONAL_IMPORT_OF_FINAL_AND_PROTOCOL = """\
+if sys.version_info >= (3, 8):
+    from typing import Final, Protocol
+else:
+    from typing_extensions import Final, Protocol"""
+
+
+def _is_conditional_header_for_typing(
     node: Union[ast.AST], atok: asttokens.ASTTokens
 ) -> bool:
     """Check if the node is an ``if``-statement importing ``typing.Final``."""
@@ -593,7 +606,13 @@ def _is_conditional_import_of_typing_final(
     # This is not a very robust test, but will probably work for a long time.
 
     # noinspection PyTypeChecker
-    return atok.get_text(node) == _CONDITIONAL_IMPORT_OF_TYPING_FINAL
+    text = atok.get_text(node)
+
+    return text in (
+        _CONDITIONAL_IMPORT_OF_TYPING_FINAL,
+        _CONDITIONAL_DEFINITION_OF_PATH_LIKE_ON_TYPE_CHECKING,
+        _CONDITIONAL_IMPORT_OF_FINAL_AND_PROTOCOL,
+    )
 
 
 def _strip_comments(text: str) -> str:
@@ -793,6 +812,9 @@ class _ASTBase64Collector(ast.NodeVisitor):
         if isinstance(node.value, ast.Name) and node.value.id == "base64":
             self.attributes.append(node)
 
+        self.visit(node.value)
+        self.visit(node.ctx)
+
 
 def _replace_base64_with_binascii(text: str) -> str:
     """
@@ -824,7 +846,9 @@ def _replace_base64_with_binascii(text: str) -> str:
                 )
             )
         else:
-            raise NotImplementedError(f"Unhandled collections.abc: {ast.dump(node)}")
+            raise NotImplementedError(
+                f"Unhandled base64-related statement: {ast.dump(node)}"
+            )
 
     return patching.apply_patches(patches, text)
 
@@ -923,7 +947,7 @@ def _map_module_to_implementation(
             else:
                 pass
 
-        elif _is_conditional_import_of_typing_final(node=stmt, atok=atok):
+        elif _is_conditional_header_for_typing(node=stmt, atok=atok):
             patches.append(
                 patching.Patch(range=patching.cast_node_to_range(stmt), replacement="")
             )
@@ -979,18 +1003,12 @@ def _map_module_to_implementation(
 
 
 def _produce_stub_file(
-    source_path: pathlib.Path, target_path: pathlib.Path
-) -> Optional[patching.Error]:
+    atok: asttokens.ASTTokens, target_path: pathlib.Path
+) -> Optional[List[patching.Error]]:
     """Generate the stub file for mypy."""
-    atok, error = patching.parse_file(source_path)
-    if error is not None:
-        return error
-
     text, errors = _map_module_to_stub(module=atok.tree, atok=atok)
     if errors is not None:
-        return patching.Error(
-            f"Failed to generate the stub for: {source_path}", underlying_errors=errors
-        )
+        return errors
 
     assert text is not None
     target_path.write_text(text, encoding="utf-8")
@@ -998,26 +1016,19 @@ def _produce_stub_file(
 
 
 def _produce_implementation_file(
-    source_path: pathlib.Path, target_path: pathlib.Path
-) -> Optional[patching.Error]:
+    atok: asttokens.ASTTokens, target_path: pathlib.Path
+) -> Optional[List[patching.Error]]:
     """Generate the implementation file stripped of any type annotations."""
-    atok, error = patching.parse_file(source_path)
-    if error is not None:
-        return error
-
     text, errors = _map_module_to_implementation(module=atok.tree, atok=atok)
     if errors is not None:
-        return patching.Error(
-            f"Failed to generate the implementation for: {source_path}",
-            underlying_errors=errors,
-        )
+        return errors
 
     assert text is not None
     target_path.write_text(text, encoding="utf-8")
     return None
 
 
-def patch_to_stub_and_implementation_file(
+def _patch_to_stub_and_implementation_file(
     source_path: pathlib.Path,
     target_stub_path: pathlib.Path,
     target_implementation_path: pathlib.Path,
@@ -1025,15 +1036,233 @@ def patch_to_stub_and_implementation_file(
     """Patch the file and split it into a stub and the implementation file."""
     errors = []  # type: List[patching.Error]
 
-    error = _produce_stub_file(source_path=source_path, target_path=target_stub_path)
+    atok, error = patching.parse_file(source_path)
     if error is not None:
-        errors.append(error)
+        return error
 
-    error = _produce_implementation_file(
-        source_path=source_path, target_path=target_implementation_path
+    stub_errors = _produce_stub_file(atok=atok, target_path=target_stub_path)
+    if stub_errors is not None:
+        errors.append(
+            patching.Error("Failed to produce the stub", underlying_errors=stub_errors)
+        )
+
+    impl_errors = _produce_implementation_file(
+        atok=atok, target_path=target_implementation_path
     )
+    if impl_errors is not None:
+        errors.append(
+            patching.Error(
+                "Failed to produce the implementation", underlying_errors=impl_errors
+            )
+        )
+
+    if len(errors) > 0:
+        return patching.Error(
+            f"Failed to patch: {source_path}", underlying_errors=errors
+        )
+
+    return None
+
+
+def _remove_global_level_comments(text: str) -> str:
+    """Strip all the comments at the global level, *i.e.*, at no indention."""
+    stream = io.StringIO(text)
+
+    accepted_tokens = []  # type: List[tokenize.Token]
+
+    prev_token = None
+    for token in tokenize.generate_tokens(stream.readline):
+        if not (
+            token.type is tokenize.COMMENT
+            and (
+                prev_token is None
+                or prev_token.type is tokenize.NL
+                or prev_token.type is tokenize.NEWLINE
+            )
+        ):
+            accepted_tokens.append(token)
+
+        prev_token = token
+
+    return tokenize.untokenize(accepted_tokens)
+
+
+@ensure(lambda result: (result[0] is not None) ^ (result[1] is not None))
+def _remove_xml_deserialization(
+    atok: asttokens.ASTTokens,
+) -> Tuple[Optional[str], Optional[patching.Error]]:
+    """Remove all the elements from the module related to the XML de-serialization."""
+    patches = []  # type: List[patching.Patch]
+
+    docstring = _find_docstring(atok.tree.body)
+    if docstring is None:
+        return None, patching.Error("Expected to find a docstring, but found none")
+
+    patches.append(
+        patching.Patch(
+            range=patching.cast_node_to_range(docstring),
+            replacement='"""Serialize AAS models to XML."""',
+        )
+    )
+
+    class_set_to_ignore = {
+        "Element",
+        "HasIterparse",
+        "ElementSegment",
+        "IndexSegment",
+        "Segment",
+        "Path",
+        "DeserializationException",
+    }
+
+    function_set_to_ignore = {
+        "_with_elements_cleared_after_yield",
+        "_parse_element_tag",
+        "_raise_if_has_tail_or_attrib",
+        "_read_end_element",
+        "_read_text_from_element",
+        "_read_bool_from_element_text",
+        "_read_int_from_element_text",
+        "_read_float_from_element_text",
+        "_read_str_from_element_text",
+        "_read_bytes_from_element_text",
+    }
+
+    variable_set_to_ignore = {
+        "_XS_BOOLEAN_LITERAL_SET",
+        "_NAMESPACE_IN_CURLY_BRACKETS",
+        "Segment",
+        "_TEXT_TO_XS_DOUBLE_LITERALS",
+    }
+
+    for stmt in atok.tree.body:
+        ignore = False
+        if isinstance(stmt, ast.ClassDef):
+            if stmt.name in class_set_to_ignore:
+                ignore = True
+            elif stmt.name.startswith("_ReaderAndSetterFor"):
+                ignore = True
+            else:
+                pass
+        elif isinstance(stmt, ast.FunctionDef):
+            if stmt.name in function_set_to_ignore:
+                ignore = True
+            elif (
+                stmt.name.endswith("_from_iterparse")
+                or stmt.name.endswith("_from_stream")
+                or stmt.name.endswith("_from_file")
+                or stmt.name.endswith("_from_str")
+                or re.match(r"^_read_.*_as_element$", stmt.name) is not None
+                or re.match(r"^_read_.*_as_sequence$", stmt.name) is not None
+                or re.match(r"^_read_.*_from_element_text$", stmt.name) is not None
+            ):
+                ignore = True
+            else:
+                pass
+        elif isinstance(stmt, (ast.AnnAssign, ast.Assign)):
+            target = None  # type: Optional[ast.AST]
+
+            if isinstance(stmt, ast.Assign) and len(stmt.targets) == 1:
+                target = stmt.targets[0]
+            elif isinstance(stmt, ast.AnnAssign):
+                target = stmt.target
+            else:
+                pass
+
+            if (
+                target is not None
+                and isinstance(target, ast.Name)
+                and (
+                    target.id in variable_set_to_ignore
+                    or target.id.startswith("_DISPATCH_FOR_")
+                    or target.id.startswith("_READ_AND_SET_DISPATCH_FOR_")
+                )
+            ):
+                ignore = True
+
+        elif isinstance(stmt, ast.Import):
+            if len(stmt.names) == 1:
+                import_name = stmt.names[0]
+                assert isinstance(import_name, ast.alias), (
+                    f"Expected import names to be alias, "
+                    f"but got something else in the statement: {ast.dump(stmt)}"
+                )
+
+                if import_name.name == "xml.etree.ElementTree":
+                    ignore = True
+        else:
+            pass
+
+        if ignore:
+            patches.append(
+                patching.Patch(range=patching.cast_node_to_range(stmt), replacement="")
+            )
+
+    new_text = patching.apply_patches(patches, atok.text)
+
+    # NOTE (mristin, 2024-04-12):
+    # We reformat only a slight bit so that the result is easier for debugging.
+    new_text = re.sub(r"\n\n\n+", "\n\n", new_text)
+
+    # NOTE (mristin, 2024-04-12):
+    # We remove the comments at the global level as it is very cumbersome to tie them
+    # to the definitions which we are removing. Hence, we leave the indented comments,
+    # but make a blanket removal of all the global comments even if they would have been
+    # informative.
+    new_text = _remove_global_level_comments(new_text)
+
+    return new_text, None
+
+
+def _patch_xml_serialization(
+    source_path: pathlib.Path,
+    target_stub_path: pathlib.Path,
+    target_implementation_path: pathlib.Path,
+) -> Optional[patching.Error]:
+    """Patch only the XML serialization as Micropython does not include XML library."""
+    atok, error = patching.parse_file(source_path)
     if error is not None:
-        errors.append(error)
+        return error
+
+    assert atok is not None
+    text_wo_deserialization, error = _remove_xml_deserialization(atok=atok)
+    if error is not None:
+        return patching.Error(
+            f"Failed to remove the XML de-serialization from: {source_path}",
+            underlying_errors=[error],
+        )
+
+    try:
+        atok_wo_deserialization = asttokens.ASTTokens(
+            text_wo_deserialization, parse=True
+        )
+    except Exception as exception:
+        return patching.Error(
+            f"Failed to parse the code where the XML de-serialization "
+            f"is removed: {exception} from: {source_path}"
+        )
+
+    assert atok_wo_deserialization is not None
+
+    errors = []  # type: List[patching.Error]
+
+    stub_errors = _produce_stub_file(
+        atok=atok_wo_deserialization, target_path=target_stub_path
+    )
+    if stub_errors is not None:
+        errors.append(
+            patching.Error("Failed to produce the stub", underlying_errors=stub_errors)
+        )
+
+    impl_errors = _produce_implementation_file(
+        atok=atok_wo_deserialization, target_path=target_implementation_path
+    )
+    if impl_errors is not None:
+        errors.append(
+            patching.Error(
+                "Failed to produce the implementation", underlying_errors=impl_errors
+            )
+        )
 
     if len(errors) > 0:
         return patching.Error(
@@ -1119,7 +1348,7 @@ to:
         errors.append(error)
 
     for submodule in ["common", "constants", "jsonization", "stringification", "types"]:
-        error = patch_to_stub_and_implementation_file(
+        error = _patch_to_stub_and_implementation_file(
             source_path=source_repo_dir / module_name / f"{submodule}.py",
             target_stub_path=target_repo_dir / module_name / f"{submodule}.pyi",
             target_implementation_path=target_repo_dir
@@ -1128,6 +1357,14 @@ to:
         )
         if error is not None:
             errors.append(error)
+
+    error = _patch_xml_serialization(
+        source_path=source_repo_dir / module_name / "xmlization.py",
+        target_stub_path=target_repo_dir / module_name / "xmlization.pyi",
+        target_implementation_path=target_repo_dir / module_name / "xmlization.py",
+    )
+    if error is not None:
+        errors.append(error)
 
     if len(errors) > 0:
         print(

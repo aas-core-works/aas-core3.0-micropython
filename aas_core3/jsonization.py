@@ -6144,7 +6144,7 @@ _SETTER_MAP_FOR_DATA_SPECIFICATION_IEC_61360 = {
 
 def _bytes_to_base64_str(value):
 
-    return base64.b64encode(value).decode("ascii")
+    return binascii.b2a_base64(value).decode("ascii")
 
 
 class _Serializer(aas_types.AbstractTransformer):
