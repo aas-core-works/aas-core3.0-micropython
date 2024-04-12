@@ -77,6 +77,42 @@ def test_descend_and_descend_once():
         ):
             print(something.id_short)
 
+class Visitor(aas_types.PassThroughVisitor):
+    def visit_property(self, that: aas_types.Property):
+        if "another" in that.id_short:
+            print(that.id_short)
+
+
+def test_visitor():
+    # Prepare the environment
+    environment = aas_types.Environment(
+        submodels=[
+            aas_types.Submodel(
+                id="some-unique-global-identifier",
+                submodel_elements=[
+                    aas_types.Property(
+                        id_short="some_property",
+                        value_type=aas_types.DataTypeDefXSD.INT,
+                        value="1984"
+                    ),
+                    aas_types.Property(
+                        id_short="another_property",
+                        value_type=aas_types.DataTypeDefXSD.INT,
+                        value="1985"
+                    ),
+                    aas_types.Property(
+                        id_short="yet_another_property",
+                        value_type=aas_types.DataTypeDefXSD.INT,
+                        value="1986"
+                    )
+                ]
+            )
+        ]
+    )
+
+    # Iterate
+    visitor = Visitor()
+    visitor.visit(environment)
 
 def test_jsonization_serialize():
     # Prepare the environment
@@ -157,6 +193,8 @@ def test_xmlization_serialize():
 if __name__ == "__main__":
     test_create_get_set()
     test_descend_and_descend_once()
+    test_visitor()
     test_jsonization_serialize()
     test_jsonization_deserialize()
     test_jsonization_serialize()
+    test_xmlization_serialize()
