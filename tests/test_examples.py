@@ -77,6 +77,7 @@ def test_descend_and_descend_once():
         ):
             print(something.id_short)
 
+
 class Visitor(aas_types.PassThroughVisitor):
     def visit_property(self, that: aas_types.Property):
         if "another" in that.id_short:
@@ -93,19 +94,19 @@ def test_visitor():
                     aas_types.Property(
                         id_short="some_property",
                         value_type=aas_types.DataTypeDefXSD.INT,
-                        value="1984"
+                        value="1984",
                     ),
                     aas_types.Property(
                         id_short="another_property",
                         value_type=aas_types.DataTypeDefXSD.INT,
-                        value="1985"
+                        value="1985",
                     ),
                     aas_types.Property(
                         id_short="yet_another_property",
                         value_type=aas_types.DataTypeDefXSD.INT,
-                        value="1986"
-                    )
-                ]
+                        value="1986",
+                    ),
+                ],
             )
         ]
     )
@@ -113,6 +114,7 @@ def test_visitor():
     # Iterate
     visitor = Visitor()
     visitor.visit(environment)
+
 
 def test_jsonization_serialize():
     # Prepare the environment
@@ -198,3 +200,4 @@ if __name__ == "__main__":
     test_jsonization_deserialize()
     test_jsonization_serialize()
     test_xmlization_serialize()
+    
