@@ -3499,19 +3499,21 @@ class EmbeddedDataSpecification(Class):
 
     def descend_once(self):
 
-        yield self.data_specification
-
         yield self.data_specification_content
 
+        if self.data_specification is not None:
+            yield self.data_specification
+
     def descend(self):
-
-        yield self.data_specification
-
-        yield from self.data_specification.descend()
 
         yield self.data_specification_content
 
         yield from self.data_specification_content.descend()
+
+        if self.data_specification is not None:
+            yield self.data_specification
+
+            yield from self.data_specification.descend()
 
     def accept(self, visitor):
 
@@ -3537,12 +3539,12 @@ class EmbeddedDataSpecification(Class):
 
     def __init__(
         self,
-        data_specification,
         data_specification_content,
+        data_specification=None,
     ):
 
-        self.data_specification = data_specification
         self.data_specification_content = data_specification_content
+        self.data_specification = data_specification
 
 
 @aas_enum.decorator
