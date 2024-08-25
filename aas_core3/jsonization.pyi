@@ -13,6 +13,7 @@ import base64
 import collections.abc
 import sys
 from typing import (
+    cast,
     Any,
     Callable,
     Iterable,
@@ -149,6 +150,40 @@ def _bytes_from_jsonable(jsonable: Jsonable) -> bytes:
     :param jsonable: JSON-able structure to be decoded
     :return: decoded bytearray
     :raise: :py:class:`DeserializationException` if unexpected :paramref:`jsonable`
+    """
+    ...
+
+def _try_to_cast_to_array_like(jsonable: Jsonable) -> Optional[Iterable[Any]]:
+    """
+    Try to cast the ``jsonable`` to something like a JSON array.
+
+    In particular, we explicitly check that the ``jsonable`` is not a mapping, as we
+    do not want to mistake dictionaries (*i.e.* de-serialized JSON objects) for lists.
+
+    >>> assert _try_to_cast_to_array_like(True) is None
+
+    >>> assert _try_to_cast_to_array_like(0) is None
+
+    >>> assert _try_to_cast_to_array_like(2.2) is None
+
+    >>> assert _try_to_cast_to_array_like("hello") is None
+
+    >>> assert _try_to_cast_to_array_like(b"hello") is None
+
+    >>> _try_to_cast_to_array_like([1, 2])
+    [1, 2]
+
+    >>> assert _try_to_cast_to_array_like({"a": 3}) is None
+
+    >>> assert _try_to_cast_to_array_like(collections.OrderedDict()) is None
+
+    >>> _try_to_cast_to_array_like(range(1, 2))
+    range(1, 2)
+
+    >>> _try_to_cast_to_array_like((1, 2))
+    (1, 2)
+
+    >>> assert _try_to_cast_to_array_like({1, 2, 3}) is None
     """
     ...
 
