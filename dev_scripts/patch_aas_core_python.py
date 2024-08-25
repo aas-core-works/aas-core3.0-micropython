@@ -792,6 +792,12 @@ def _replace_collections_abc_with_native_types(text: str) -> str:
                     range=patching.cast_node_to_range(node), replacement="list"
                 )
             )
+        elif node.attr == "Set":
+            patches.append(
+                patching.Patch(
+                    range=patching.cast_node_to_range(node), replacement="set"
+                )
+            )
         else:
             raise NotImplementedError(f"Unhandled collections.abc: {ast.dump(node)}")
 
