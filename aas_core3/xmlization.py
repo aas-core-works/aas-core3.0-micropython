@@ -1991,10 +1991,9 @@ class _Serializer(aas_types.AbstractVisitor):
         self.visit(that.data_specification_content)
         self._write_end_element("dataSpecificationContent")
 
-        if that.data_specification is not None:
-            self._write_start_element("dataSpecification")
-            self._write_reference_as_sequence(that.data_specification)
-            self._write_end_element("dataSpecification")
+        self._write_start_element("dataSpecification")
+        self._write_reference_as_sequence(that.data_specification)
+        self._write_end_element("dataSpecification")
 
     def visit_embedded_data_specification(self, that):
 

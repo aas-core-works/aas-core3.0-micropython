@@ -3501,8 +3501,7 @@ class EmbeddedDataSpecification(Class):
 
         yield self.data_specification_content
 
-        if self.data_specification is not None:
-            yield self.data_specification
+        yield self.data_specification
 
     def descend(self):
 
@@ -3510,10 +3509,9 @@ class EmbeddedDataSpecification(Class):
 
         yield from self.data_specification_content.descend()
 
-        if self.data_specification is not None:
-            yield self.data_specification
+        yield self.data_specification
 
-            yield from self.data_specification.descend()
+        yield from self.data_specification.descend()
 
     def accept(self, visitor):
 
@@ -3540,7 +3538,7 @@ class EmbeddedDataSpecification(Class):
     def __init__(
         self,
         data_specification_content,
-        data_specification=None,
+        data_specification,
     ):
 
         self.data_specification_content = data_specification_content
