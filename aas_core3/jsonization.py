@@ -109,6 +109,19 @@ def _bytes_from_jsonable(jsonable):
     return binascii.a2b_base64(jsonable.encode("ascii"))
 
 
+def _try_to_cast_to_array_like(jsonable):
+
+    if (
+        not isinstance(jsonable, (str, bytearray, bytes))
+        and hasattr(jsonable, "__iter__")
+        and not hasattr(jsonable, "keys")
+        and not isinstance(jsonable, set)
+    ):
+        return cast(Iterable[Any], jsonable)
+
+    return None
+
+
 def has_semantics_from_jsonable(jsonable):
 
     if not isinstance(jsonable, dict):
@@ -155,17 +168,18 @@ class _SetterForExtension:
 
     def set_supplemental_semantic_ids_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = reference_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -186,17 +200,18 @@ class _SetterForExtension:
 
     def set_refers_to_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = reference_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -392,17 +407,18 @@ class _SetterForAdministrativeInformation:
 
     def set_embedded_data_specifications_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = embedded_data_specification_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -516,17 +532,18 @@ class _SetterForQualifier:
 
     def set_supplemental_semantic_ids_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = reference_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -611,17 +628,18 @@ class _SetterForAssetAdministrationShell:
 
     def set_extensions_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = extension_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -638,17 +656,18 @@ class _SetterForAssetAdministrationShell:
 
     def set_display_name_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = lang_string_name_type_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -657,17 +676,18 @@ class _SetterForAssetAdministrationShell:
 
     def set_description_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = lang_string_text_type_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -684,17 +704,18 @@ class _SetterForAssetAdministrationShell:
 
     def set_embedded_data_specifications_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = embedded_data_specification_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -711,17 +732,18 @@ class _SetterForAssetAdministrationShell:
 
     def set_submodels_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = reference_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -737,6 +759,17 @@ def asset_administration_shell_from_jsonable(
         raise DeserializationException(f"Expected a mapping, but got: {type(jsonable)}")
 
     setter = _SetterForAssetAdministrationShell()
+
+    model_type = jsonable.get("modelType", None)
+    if model_type is None:
+        raise DeserializationException(
+            "Expected the property modelType, but found none"
+        )
+
+    if model_type != "AssetAdministrationShell":
+        raise DeserializationException(
+            f"Invalid modelType, expected 'AssetAdministrationShell', but got: {model_type}"
+        )
 
     for key, jsonable_value in jsonable.items():
         setter_method = _SETTER_MAP_FOR_ASSET_ADMINISTRATION_SHELL.get(key)
@@ -796,17 +829,18 @@ class _SetterForAssetInformation:
 
     def set_specific_asset_ids_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = specific_asset_id_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -930,17 +964,18 @@ class _SetterForSpecificAssetID:
 
     def set_supplemental_semantic_ids_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = reference_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -1017,17 +1052,18 @@ class _SetterForSubmodel:
 
     def set_extensions_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = extension_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -1044,17 +1080,18 @@ class _SetterForSubmodel:
 
     def set_display_name_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = lang_string_name_type_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -1063,17 +1100,18 @@ class _SetterForSubmodel:
 
     def set_description_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = lang_string_text_type_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -1098,17 +1136,18 @@ class _SetterForSubmodel:
 
     def set_supplemental_semantic_ids_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = reference_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -1117,17 +1156,18 @@ class _SetterForSubmodel:
 
     def set_qualifiers_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = qualifier_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -1136,17 +1176,18 @@ class _SetterForSubmodel:
 
     def set_embedded_data_specifications_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = embedded_data_specification_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -1155,17 +1196,18 @@ class _SetterForSubmodel:
 
     def set_submodel_elements_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = submodel_element_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -1179,6 +1221,17 @@ def submodel_from_jsonable(jsonable):
         raise DeserializationException(f"Expected a mapping, but got: {type(jsonable)}")
 
     setter = _SetterForSubmodel()
+
+    model_type = jsonable.get("modelType", None)
+    if model_type is None:
+        raise DeserializationException(
+            "Expected the property modelType, but found none"
+        )
+
+    if model_type != "Submodel":
+        raise DeserializationException(
+            f"Invalid modelType, expected 'Submodel', but got: {model_type}"
+        )
 
     for key, jsonable_value in jsonable.items():
         setter_method = _SETTER_MAP_FOR_SUBMODEL.get(key)
@@ -1285,17 +1338,18 @@ class _SetterForRelationshipElement:
 
     def set_extensions_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = extension_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -1312,17 +1366,18 @@ class _SetterForRelationshipElement:
 
     def set_display_name_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = lang_string_name_type_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -1331,17 +1386,18 @@ class _SetterForRelationshipElement:
 
     def set_description_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = lang_string_text_type_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -1354,17 +1410,18 @@ class _SetterForRelationshipElement:
 
     def set_supplemental_semantic_ids_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = reference_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -1373,17 +1430,18 @@ class _SetterForRelationshipElement:
 
     def set_qualifiers_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = qualifier_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -1392,17 +1450,18 @@ class _SetterForRelationshipElement:
 
     def set_embedded_data_specifications_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = embedded_data_specification_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -1500,17 +1559,18 @@ class _SetterForSubmodelElementList:
 
     def set_extensions_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = extension_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -1527,17 +1587,18 @@ class _SetterForSubmodelElementList:
 
     def set_display_name_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = lang_string_name_type_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -1546,17 +1607,18 @@ class _SetterForSubmodelElementList:
 
     def set_description_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = lang_string_text_type_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -1569,17 +1631,18 @@ class _SetterForSubmodelElementList:
 
     def set_supplemental_semantic_ids_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = reference_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -1588,17 +1651,18 @@ class _SetterForSubmodelElementList:
 
     def set_qualifiers_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = qualifier_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -1607,17 +1671,18 @@ class _SetterForSubmodelElementList:
 
     def set_embedded_data_specifications_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = embedded_data_specification_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -1642,17 +1707,18 @@ class _SetterForSubmodelElementList:
 
     def set_value_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = submodel_element_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -1668,6 +1734,17 @@ def submodel_element_list_from_jsonable(
         raise DeserializationException(f"Expected a mapping, but got: {type(jsonable)}")
 
     setter = _SetterForSubmodelElementList()
+
+    model_type = jsonable.get("modelType", None)
+    if model_type is None:
+        raise DeserializationException(
+            "Expected the property modelType, but found none"
+        )
+
+    if model_type != "SubmodelElementList":
+        raise DeserializationException(
+            f"Invalid modelType, expected 'SubmodelElementList', but got: {model_type}"
+        )
 
     for key, jsonable_value in jsonable.items():
         setter_method = _SETTER_MAP_FOR_SUBMODEL_ELEMENT_LIST.get(key)
@@ -1724,17 +1801,18 @@ class _SetterForSubmodelElementCollection:
 
     def set_extensions_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = extension_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -1751,17 +1829,18 @@ class _SetterForSubmodelElementCollection:
 
     def set_display_name_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = lang_string_name_type_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -1770,17 +1849,18 @@ class _SetterForSubmodelElementCollection:
 
     def set_description_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = lang_string_text_type_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -1793,17 +1873,18 @@ class _SetterForSubmodelElementCollection:
 
     def set_supplemental_semantic_ids_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = reference_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -1812,17 +1893,18 @@ class _SetterForSubmodelElementCollection:
 
     def set_qualifiers_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = qualifier_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -1831,17 +1913,18 @@ class _SetterForSubmodelElementCollection:
 
     def set_embedded_data_specifications_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = embedded_data_specification_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -1850,17 +1933,18 @@ class _SetterForSubmodelElementCollection:
 
     def set_value_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = submodel_element_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -1876,6 +1960,17 @@ def submodel_element_collection_from_jsonable(
         raise DeserializationException(f"Expected a mapping, but got: {type(jsonable)}")
 
     setter = _SetterForSubmodelElementCollection()
+
+    model_type = jsonable.get("modelType", None)
+    if model_type is None:
+        raise DeserializationException(
+            "Expected the property modelType, but found none"
+        )
+
+    if model_type != "SubmodelElementCollection":
+        raise DeserializationException(
+            f"Invalid modelType, expected 'SubmodelElementCollection', but got: {model_type}"
+        )
 
     for key, jsonable_value in jsonable.items():
         setter_method = _SETTER_MAP_FOR_SUBMODEL_ELEMENT_COLLECTION.get(key)
@@ -1950,17 +2045,18 @@ class _SetterForProperty:
 
     def set_extensions_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = extension_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -1977,17 +2073,18 @@ class _SetterForProperty:
 
     def set_display_name_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = lang_string_name_type_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -1996,17 +2093,18 @@ class _SetterForProperty:
 
     def set_description_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = lang_string_text_type_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -2019,17 +2117,18 @@ class _SetterForProperty:
 
     def set_supplemental_semantic_ids_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = reference_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -2038,17 +2137,18 @@ class _SetterForProperty:
 
     def set_qualifiers_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = qualifier_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -2057,17 +2157,18 @@ class _SetterForProperty:
 
     def set_embedded_data_specifications_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = embedded_data_specification_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -2093,6 +2194,17 @@ def property_from_jsonable(jsonable):
         raise DeserializationException(f"Expected a mapping, but got: {type(jsonable)}")
 
     setter = _SetterForProperty()
+
+    model_type = jsonable.get("modelType", None)
+    if model_type is None:
+        raise DeserializationException(
+            "Expected the property modelType, but found none"
+        )
+
+    if model_type != "Property":
+        raise DeserializationException(
+            f"Invalid modelType, expected 'Property', but got: {model_type}"
+        )
 
     for key, jsonable_value in jsonable.items():
         setter_method = _SETTER_MAP_FOR_PROPERTY.get(key)
@@ -2146,17 +2258,18 @@ class _SetterForMultiLanguageProperty:
 
     def set_extensions_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = extension_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -2173,17 +2286,18 @@ class _SetterForMultiLanguageProperty:
 
     def set_display_name_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = lang_string_name_type_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -2192,17 +2306,18 @@ class _SetterForMultiLanguageProperty:
 
     def set_description_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = lang_string_text_type_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -2215,17 +2330,18 @@ class _SetterForMultiLanguageProperty:
 
     def set_supplemental_semantic_ids_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = reference_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -2234,17 +2350,18 @@ class _SetterForMultiLanguageProperty:
 
     def set_qualifiers_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = qualifier_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -2253,17 +2370,18 @@ class _SetterForMultiLanguageProperty:
 
     def set_embedded_data_specifications_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = embedded_data_specification_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -2272,17 +2390,18 @@ class _SetterForMultiLanguageProperty:
 
     def set_value_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = lang_string_text_type_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -2302,6 +2421,17 @@ def multi_language_property_from_jsonable(
         raise DeserializationException(f"Expected a mapping, but got: {type(jsonable)}")
 
     setter = _SetterForMultiLanguageProperty()
+
+    model_type = jsonable.get("modelType", None)
+    if model_type is None:
+        raise DeserializationException(
+            "Expected the property modelType, but found none"
+        )
+
+    if model_type != "MultiLanguageProperty":
+        raise DeserializationException(
+            f"Invalid modelType, expected 'MultiLanguageProperty', but got: {model_type}"
+        )
 
     for key, jsonable_value in jsonable.items():
         setter_method = _SETTER_MAP_FOR_MULTI_LANGUAGE_PROPERTY.get(key)
@@ -2352,17 +2482,18 @@ class _SetterForRange:
 
     def set_extensions_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = extension_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -2379,17 +2510,18 @@ class _SetterForRange:
 
     def set_display_name_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = lang_string_name_type_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -2398,17 +2530,18 @@ class _SetterForRange:
 
     def set_description_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = lang_string_text_type_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -2421,17 +2554,18 @@ class _SetterForRange:
 
     def set_supplemental_semantic_ids_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = reference_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -2440,17 +2574,18 @@ class _SetterForRange:
 
     def set_qualifiers_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = qualifier_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -2459,17 +2594,18 @@ class _SetterForRange:
 
     def set_embedded_data_specifications_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = embedded_data_specification_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -2495,6 +2631,17 @@ def range_from_jsonable(jsonable):
         raise DeserializationException(f"Expected a mapping, but got: {type(jsonable)}")
 
     setter = _SetterForRange()
+
+    model_type = jsonable.get("modelType", None)
+    if model_type is None:
+        raise DeserializationException(
+            "Expected the property modelType, but found none"
+        )
+
+    if model_type != "Range":
+        raise DeserializationException(
+            f"Invalid modelType, expected 'Range', but got: {model_type}"
+        )
 
     for key, jsonable_value in jsonable.items():
         setter_method = _SETTER_MAP_FOR_RANGE.get(key)
@@ -2547,17 +2694,18 @@ class _SetterForReferenceElement:
 
     def set_extensions_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = extension_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -2574,17 +2722,18 @@ class _SetterForReferenceElement:
 
     def set_display_name_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = lang_string_name_type_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -2593,17 +2742,18 @@ class _SetterForReferenceElement:
 
     def set_description_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = lang_string_text_type_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -2616,17 +2766,18 @@ class _SetterForReferenceElement:
 
     def set_supplemental_semantic_ids_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = reference_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -2635,17 +2786,18 @@ class _SetterForReferenceElement:
 
     def set_qualifiers_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = qualifier_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -2654,17 +2806,18 @@ class _SetterForReferenceElement:
 
     def set_embedded_data_specifications_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = embedded_data_specification_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -2682,6 +2835,17 @@ def reference_element_from_jsonable(jsonable):
         raise DeserializationException(f"Expected a mapping, but got: {type(jsonable)}")
 
     setter = _SetterForReferenceElement()
+
+    model_type = jsonable.get("modelType", None)
+    if model_type is None:
+        raise DeserializationException(
+            "Expected the property modelType, but found none"
+        )
+
+    if model_type != "ReferenceElement":
+        raise DeserializationException(
+            f"Invalid modelType, expected 'ReferenceElement', but got: {model_type}"
+        )
 
     for key, jsonable_value in jsonable.items():
         setter_method = _SETTER_MAP_FOR_REFERENCE_ELEMENT.get(key)
@@ -2730,17 +2894,18 @@ class _SetterForBlob:
 
     def set_extensions_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = extension_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -2757,17 +2922,18 @@ class _SetterForBlob:
 
     def set_display_name_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = lang_string_name_type_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -2776,17 +2942,18 @@ class _SetterForBlob:
 
     def set_description_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = lang_string_text_type_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -2799,17 +2966,18 @@ class _SetterForBlob:
 
     def set_supplemental_semantic_ids_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = reference_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -2818,17 +2986,18 @@ class _SetterForBlob:
 
     def set_qualifiers_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = qualifier_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -2837,17 +3006,18 @@ class _SetterForBlob:
 
     def set_embedded_data_specifications_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = embedded_data_specification_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -2869,6 +3039,17 @@ def blob_from_jsonable(jsonable):
         raise DeserializationException(f"Expected a mapping, but got: {type(jsonable)}")
 
     setter = _SetterForBlob()
+
+    model_type = jsonable.get("modelType", None)
+    if model_type is None:
+        raise DeserializationException(
+            "Expected the property modelType, but found none"
+        )
+
+    if model_type != "Blob":
+        raise DeserializationException(
+            f"Invalid modelType, expected 'Blob', but got: {model_type}"
+        )
 
     for key, jsonable_value in jsonable.items():
         setter_method = _SETTER_MAP_FOR_BLOB.get(key)
@@ -2921,17 +3102,18 @@ class _SetterForFile:
 
     def set_extensions_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = extension_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -2948,17 +3130,18 @@ class _SetterForFile:
 
     def set_display_name_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = lang_string_name_type_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -2967,17 +3150,18 @@ class _SetterForFile:
 
     def set_description_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = lang_string_text_type_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -2990,17 +3174,18 @@ class _SetterForFile:
 
     def set_supplemental_semantic_ids_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = reference_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -3009,17 +3194,18 @@ class _SetterForFile:
 
     def set_qualifiers_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = qualifier_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -3028,17 +3214,18 @@ class _SetterForFile:
 
     def set_embedded_data_specifications_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = embedded_data_specification_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -3060,6 +3247,17 @@ def file_from_jsonable(jsonable):
         raise DeserializationException(f"Expected a mapping, but got: {type(jsonable)}")
 
     setter = _SetterForFile()
+
+    model_type = jsonable.get("modelType", None)
+    if model_type is None:
+        raise DeserializationException(
+            "Expected the property modelType, but found none"
+        )
+
+    if model_type != "File":
+        raise DeserializationException(
+            f"Invalid modelType, expected 'File', but got: {model_type}"
+        )
 
     for key, jsonable_value in jsonable.items():
         setter_method = _SETTER_MAP_FOR_FILE.get(key)
@@ -3113,17 +3311,18 @@ class _SetterForAnnotatedRelationshipElement:
 
     def set_extensions_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = extension_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -3140,17 +3339,18 @@ class _SetterForAnnotatedRelationshipElement:
 
     def set_display_name_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = lang_string_name_type_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -3159,17 +3359,18 @@ class _SetterForAnnotatedRelationshipElement:
 
     def set_description_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = lang_string_text_type_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -3182,17 +3383,18 @@ class _SetterForAnnotatedRelationshipElement:
 
     def set_supplemental_semantic_ids_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = reference_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -3201,17 +3403,18 @@ class _SetterForAnnotatedRelationshipElement:
 
     def set_qualifiers_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = qualifier_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -3220,17 +3423,18 @@ class _SetterForAnnotatedRelationshipElement:
 
     def set_embedded_data_specifications_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = embedded_data_specification_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -3247,17 +3451,18 @@ class _SetterForAnnotatedRelationshipElement:
 
     def set_annotations_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = data_element_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -3273,6 +3478,17 @@ def annotated_relationship_element_from_jsonable(
         raise DeserializationException(f"Expected a mapping, but got: {type(jsonable)}")
 
     setter = _SetterForAnnotatedRelationshipElement()
+
+    model_type = jsonable.get("modelType", None)
+    if model_type is None:
+        raise DeserializationException(
+            "Expected the property modelType, but found none"
+        )
+
+    if model_type != "AnnotatedRelationshipElement":
+        raise DeserializationException(
+            f"Invalid modelType, expected 'AnnotatedRelationshipElement', but got: {model_type}"
+        )
 
     for key, jsonable_value in jsonable.items():
         setter_method = _SETTER_MAP_FOR_ANNOTATED_RELATIONSHIP_ELEMENT.get(key)
@@ -3331,17 +3547,18 @@ class _SetterForEntity:
 
     def set_extensions_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = extension_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -3358,17 +3575,18 @@ class _SetterForEntity:
 
     def set_display_name_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = lang_string_name_type_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -3377,17 +3595,18 @@ class _SetterForEntity:
 
     def set_description_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = lang_string_text_type_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -3400,17 +3619,18 @@ class _SetterForEntity:
 
     def set_supplemental_semantic_ids_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = reference_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -3419,17 +3639,18 @@ class _SetterForEntity:
 
     def set_qualifiers_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = qualifier_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -3438,17 +3659,18 @@ class _SetterForEntity:
 
     def set_embedded_data_specifications_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = embedded_data_specification_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -3457,17 +3679,18 @@ class _SetterForEntity:
 
     def set_statements_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = submodel_element_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -3484,17 +3707,18 @@ class _SetterForEntity:
 
     def set_specific_asset_ids_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = specific_asset_id_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -3508,6 +3732,17 @@ def entity_from_jsonable(jsonable):
         raise DeserializationException(f"Expected a mapping, but got: {type(jsonable)}")
 
     setter = _SetterForEntity()
+
+    model_type = jsonable.get("modelType", None)
+    if model_type is None:
+        raise DeserializationException(
+            "Expected the property modelType, but found none"
+        )
+
+    if model_type != "Entity":
+        raise DeserializationException(
+            f"Invalid modelType, expected 'Entity', but got: {model_type}"
+        )
 
     for key, jsonable_value in jsonable.items():
         setter_method = _SETTER_MAP_FOR_ENTITY.get(key)
@@ -3726,17 +3961,18 @@ class _SetterForBasicEventElement:
 
     def set_extensions_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = extension_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -3753,17 +3989,18 @@ class _SetterForBasicEventElement:
 
     def set_display_name_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = lang_string_name_type_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -3772,17 +4009,18 @@ class _SetterForBasicEventElement:
 
     def set_description_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = lang_string_text_type_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -3795,17 +4033,18 @@ class _SetterForBasicEventElement:
 
     def set_supplemental_semantic_ids_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = reference_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -3814,17 +4053,18 @@ class _SetterForBasicEventElement:
 
     def set_qualifiers_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = qualifier_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -3833,17 +4073,18 @@ class _SetterForBasicEventElement:
 
     def set_embedded_data_specifications_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = embedded_data_specification_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -3891,6 +4132,17 @@ def basic_event_element_from_jsonable(
         raise DeserializationException(f"Expected a mapping, but got: {type(jsonable)}")
 
     setter = _SetterForBasicEventElement()
+
+    model_type = jsonable.get("modelType", None)
+    if model_type is None:
+        raise DeserializationException(
+            "Expected the property modelType, but found none"
+        )
+
+    if model_type != "BasicEventElement":
+        raise DeserializationException(
+            f"Invalid modelType, expected 'BasicEventElement', but got: {model_type}"
+        )
 
     for key, jsonable_value in jsonable.items():
         setter_method = _SETTER_MAP_FOR_BASIC_EVENT_ELEMENT.get(key)
@@ -3956,17 +4208,18 @@ class _SetterForOperation:
 
     def set_extensions_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = extension_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -3983,17 +4236,18 @@ class _SetterForOperation:
 
     def set_display_name_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = lang_string_name_type_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -4002,17 +4256,18 @@ class _SetterForOperation:
 
     def set_description_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = lang_string_text_type_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -4025,17 +4280,18 @@ class _SetterForOperation:
 
     def set_supplemental_semantic_ids_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = reference_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -4044,17 +4300,18 @@ class _SetterForOperation:
 
     def set_qualifiers_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = qualifier_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -4063,17 +4320,18 @@ class _SetterForOperation:
 
     def set_embedded_data_specifications_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = embedded_data_specification_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -4082,17 +4340,18 @@ class _SetterForOperation:
 
     def set_input_variables_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = operation_variable_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -4101,17 +4360,18 @@ class _SetterForOperation:
 
     def set_output_variables_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = operation_variable_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -4120,17 +4380,18 @@ class _SetterForOperation:
 
     def set_inoutput_variables_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = operation_variable_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -4144,6 +4405,17 @@ def operation_from_jsonable(jsonable):
         raise DeserializationException(f"Expected a mapping, but got: {type(jsonable)}")
 
     setter = _SetterForOperation()
+
+    model_type = jsonable.get("modelType", None)
+    if model_type is None:
+        raise DeserializationException(
+            "Expected the property modelType, but found none"
+        )
+
+    if model_type != "Operation":
+        raise DeserializationException(
+            f"Invalid modelType, expected 'Operation', but got: {model_type}"
+        )
 
     for key, jsonable_value in jsonable.items():
         setter_method = _SETTER_MAP_FOR_OPERATION.get(key)
@@ -4231,17 +4503,18 @@ class _SetterForCapability:
 
     def set_extensions_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = extension_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -4258,17 +4531,18 @@ class _SetterForCapability:
 
     def set_display_name_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = lang_string_name_type_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -4277,17 +4551,18 @@ class _SetterForCapability:
 
     def set_description_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = lang_string_text_type_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -4300,17 +4575,18 @@ class _SetterForCapability:
 
     def set_supplemental_semantic_ids_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = reference_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -4319,17 +4595,18 @@ class _SetterForCapability:
 
     def set_qualifiers_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = qualifier_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -4338,17 +4615,18 @@ class _SetterForCapability:
 
     def set_embedded_data_specifications_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = embedded_data_specification_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -4362,6 +4640,17 @@ def capability_from_jsonable(jsonable):
         raise DeserializationException(f"Expected a mapping, but got: {type(jsonable)}")
 
     setter = _SetterForCapability()
+
+    model_type = jsonable.get("modelType", None)
+    if model_type is None:
+        raise DeserializationException(
+            "Expected the property modelType, but found none"
+        )
+
+    if model_type != "Capability":
+        raise DeserializationException(
+            f"Invalid modelType, expected 'Capability', but got: {model_type}"
+        )
 
     for key, jsonable_value in jsonable.items():
         setter_method = _SETTER_MAP_FOR_CAPABILITY.get(key)
@@ -4407,17 +4696,18 @@ class _SetterForConceptDescription:
 
     def set_extensions_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = extension_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -4434,17 +4724,18 @@ class _SetterForConceptDescription:
 
     def set_display_name_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = lang_string_name_type_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -4453,17 +4744,18 @@ class _SetterForConceptDescription:
 
     def set_description_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = lang_string_text_type_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -4480,17 +4772,18 @@ class _SetterForConceptDescription:
 
     def set_embedded_data_specifications_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = embedded_data_specification_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -4499,17 +4792,18 @@ class _SetterForConceptDescription:
 
     def set_is_case_of_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = reference_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -4525,6 +4819,17 @@ def concept_description_from_jsonable(
         raise DeserializationException(f"Expected a mapping, but got: {type(jsonable)}")
 
     setter = _SetterForConceptDescription()
+
+    model_type = jsonable.get("modelType", None)
+    if model_type is None:
+        raise DeserializationException(
+            "Expected the property modelType, but found none"
+        )
+
+    if model_type != "ConceptDescription":
+        raise DeserializationException(
+            f"Invalid modelType, expected 'ConceptDescription', but got: {model_type}"
+        )
 
     for key, jsonable_value in jsonable.items():
         setter_method = _SETTER_MAP_FOR_CONCEPT_DESCRIPTION.get(key)
@@ -4589,17 +4894,18 @@ class _SetterForReference:
 
     def set_keys_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = key_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -4848,17 +5154,18 @@ class _SetterForEnvironment:
 
     def set_asset_administration_shells_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = asset_administration_shell_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -4867,17 +5174,18 @@ class _SetterForEnvironment:
 
     def set_submodels_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = submodel_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -4886,17 +5194,18 @@ class _SetterForEnvironment:
 
     def set_concept_descriptions_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = concept_description_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -5146,17 +5455,18 @@ class _SetterForValueList:
 
     def set_value_reference_pairs_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = value_reference_pair_from_jsonable(jsonable_item)
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -5362,19 +5672,20 @@ class _SetterForDataSpecificationIEC61360:
 
     def set_preferred_name_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = lang_string_preferred_name_type_iec_61360_from_jsonable(
                     jsonable_item
                 )
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -5383,19 +5694,20 @@ class _SetterForDataSpecificationIEC61360:
 
     def set_short_name_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = lang_string_short_name_type_iec_61360_from_jsonable(
                     jsonable_item
                 )
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -5424,19 +5736,20 @@ class _SetterForDataSpecificationIEC61360:
 
     def set_definition_from_jsonable(self, jsonable):
 
-        if not isinstance(jsonable, list):
+        array_like = _try_to_cast_to_array_like(jsonable)
+        if array_like is None:
             raise DeserializationException(
-                f"Expected an iterable, but got: {type(jsonable)}"
+                f"Expected something array-like, but got: {type(jsonable)}"
             )
 
         items = []
-        for i, jsonable_item in enumerate(jsonable):
+        for i, jsonable_item in enumerate(array_like):
             try:
                 item = lang_string_definition_type_iec_61360_from_jsonable(
                     jsonable_item
                 )
             except DeserializationException as exception:
-                exception.path._prepend(IndexSegment(jsonable, i))
+                exception.path._prepend(IndexSegment(array_like, i))
                 raise
 
             items.append(item)
@@ -5468,6 +5781,17 @@ def data_specification_iec_61360_from_jsonable(
         raise DeserializationException(f"Expected a mapping, but got: {type(jsonable)}")
 
     setter = _SetterForDataSpecificationIEC61360()
+
+    model_type = jsonable.get("modelType", None)
+    if model_type is None:
+        raise DeserializationException(
+            "Expected the property modelType, but found none"
+        )
+
+    if model_type != "DataSpecificationIec61360":
+        raise DeserializationException(
+            f"Invalid modelType, expected 'DataSpecificationIec61360', but got: {model_type}"
+        )
 
     for key, jsonable_value in jsonable.items():
         setter_method = _SETTER_MAP_FOR_DATA_SPECIFICATION_IEC_61360.get(key)
