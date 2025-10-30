@@ -32,9 +32,9 @@ jobs:
           python3 continuous_integration/precommit.py
 
       - name: Install MicroPython
-        uses: BrianPugh/install-micropython@v1
+        uses: BrianPugh/install-micropython@v2
         with:
-          reference: v1.20.0
+          reference: v1.26.1
 
       - name: Run tests
         run: |
