@@ -14,6 +14,19 @@ from typing import Optional, Tuple, List, Sequence, Union
 import asttokens
 from icontract import ensure
 
+# NOTE (empwilli):
+# We need to include the repository root in the python search path since newer
+# versions of Python (such as 3.11 and 3.12) exclude ``dev_scripts/`` from it
+# -- they rely on setup.py excluding them in ``find_package``:
+#
+# ``packages=find_packages(exclude=["dev_scripts", ...]),``
+#
+# . This means that the ``dev_scripts`` module will not be on the Python path,
+# as newer versions of setuptools only put packages explicitly found by
+# ``find_packages``.
+
+sys.path.append(str(pathlib.Path(os.path.realpath(__file__)).parent.parent))
+
 from dev_scripts import patching
 
 
