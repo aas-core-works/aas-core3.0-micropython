@@ -665,6 +665,10 @@ class _StringAndJoinedStrCollector(ast.NodeVisitor):
 class _RendererInFormattedValue(ast.NodeVisitor):
     """Render the formatted values in a joined string."""
 
+    # NOTE (mristin):
+    # This class is needed since atok does not hold the strings corresponding to
+    # the nodes of values in joined strings. Hence, we have to render them ourselves.
+
     # pylint: disable=missing-function-docstring
 
     def __init__(self) -> None:
@@ -682,6 +686,47 @@ class _RendererInFormattedValue(ast.NodeVisitor):
 
     def visit_Constant(self, node):
         return self._writer.write(repr(node))
+
+    def visit_Attribute(self, node):
+        assert isinstance(node, ast.Attribute)
+
+        needs_parentheses = not isinstance(
+            node.value, (ast.Call, ast.Attribute, ast.Name)
+        )
+
+        if needs_parentheses:
+            self._writer.write("(")
+
+        self.visit(node.value)
+
+        if needs_parentheses:
+            self._writer.write(")")
+
+        self._writer.write(f".{node.attr}")
+
+    def visit_Call(self, node):
+        assert isinstance(node, ast.Call)
+
+        needs_parentheses = not isinstance(
+            node.func, (ast.Call, ast.Attribute, ast.Name)
+        )
+
+        if needs_parentheses:
+            self._writer.write("(")
+
+        self.visit(node.func)
+        self._writer.write("(")
+
+        for i, arg in enumerate(node.args):
+            if i > 0:
+                self._writer.write(", ")
+
+            self.visit(arg)
+
+        self._writer.write(")")
+
+        if needs_parentheses:
+            self._writer.write(")")
 
     def generic_visit(self, node):
         raise NotImplementedError(
@@ -708,7 +753,6 @@ def _join_joined_strs(node: ast.JoinedStr, atok: asttokens.ASTTokens) -> str:
         elif isinstance(value, ast.FormattedValue):
             renderer = _RendererInFormattedValue()
             renderer.visit(value.value)
-
             parts.append("{")
             parts.append(renderer.get_text())
             parts.append("}")
@@ -730,7 +774,30 @@ def _join_strings(node: ast.Constant) -> str:
 
 
 def _join_strings_and_joined_strings(text: str) -> str:
-    """Join the strings since Micropython does not support consecutive literals."""
+    """
+    Join the strings since Micropython does not support consecutive literals.
+
+    >>> _join_strings_and_joined_strings('"testme"')
+    '"testme"'
+
+    >>> _join_strings_and_joined_strings('"test" "me"')
+    "'testme'"
+
+    >>> _join_strings_and_joined_strings('f"test{x}me"')
+    'f"test{x}me"'
+
+    >>> _join_strings_and_joined_strings('f"test{x}" f"{y}me"')
+    'f"test{x}{y}me"'
+
+    >>> _join_strings_and_joined_strings('f"test{x.y}" f"me"')
+    'f"test{x.y}me"'
+
+    >>> _join_strings_and_joined_strings('f"test{x()}" f"me"')
+    'f"test{x()}me"'
+
+    >>> _join_strings_and_joined_strings('f"test{type(variable).__name__}" f"me"')
+    'f"test{type(variable).__name__}me"'
+    """
     atok = asttokens.ASTTokens(text, parse=True)
     assert isinstance(atok.tree, ast.Module)
 
