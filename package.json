@@ -7,7 +7,8 @@
     ["aas_core3/jsonization.py", "github:aas-core-works/aas-core3.0-micropython/aas_core3/jsonization.py"],
     ["aas_core3/stringification.py", "github:aas-core-works/aas-core3.0-micropython/aas_core3/stringification.py"],
     ["aas_core3/types.py", "github:aas-core-works/aas-core3.0-micropython/aas_core3/types.py"]
+    ["aas_core3/xmlization.py", "github:aas-core-works/aas-core3.0-micropython/aas_core3/xmlization.py"],
   ],
   "deps": [],
-  "version": "1.0.3"
+  "version": "1.0.5"
 }
