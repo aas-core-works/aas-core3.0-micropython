@@ -1212,6 +1212,11 @@ def _remove_xml_deserialization(
         "_read_float_from_element_text",
         "_read_str_from_element_text",
         "_read_bytes_from_element_text",
+        "from_iterparse",
+        "from_file",
+        "from_stream",
+        "from_str",
+        "_read_as_element",
     }
 
     variable_set_to_ignore = {
@@ -1219,6 +1224,7 @@ def _remove_xml_deserialization(
         "_NAMESPACE_IN_CURLY_BRACKETS",
         "Segment",
         "_TEXT_TO_XS_DOUBLE_LITERALS",
+        "_GENERAL_DISPATCH",
     }
 
     for stmt in atok.tree.body:
