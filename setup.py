@@ -19,7 +19,7 @@ with open(os.path.join(here, "README.rst"), encoding="utf-8") as fid:
 setup(
     name='aas-core3.0-micropython',
     # Synchronize with __init__.py and changelog.rst!
-    version="1.0.4",
+    version="1.0.5",
     description="Manipulate and de/serialize Asset Administration Shells in Micropython.",
     long_description=long_description,
     url="https://github.com/aas-core-works/aas-core3.0-micropython",

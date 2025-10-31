@@ -3178,17 +3178,17 @@ class _SetterForEmbeddedDataSpecification:
         """Ignore :paramref:`jsonable` and do not set anything."""
         ...
 
-    def set_data_specification_content_from_jsonable(self, jsonable: Jsonable) -> None:
+    def set_data_specification_from_jsonable(self, jsonable: Jsonable) -> None:
         """
-        Parse :paramref:`jsonable` as the value of :py:attr:`~data_specification_content`.
+        Parse :paramref:`jsonable` as the value of :py:attr:`~data_specification`.
 
         :param jsonable: input to be parsed
         """
         ...
 
-    def set_data_specification_from_jsonable(self, jsonable: Jsonable) -> None:
+    def set_data_specification_content_from_jsonable(self, jsonable: Jsonable) -> None:
         """
-        Parse :paramref:`jsonable` as the value of :py:attr:`~data_specification`.
+        Parse :paramref:`jsonable` as the value of :py:attr:`~data_specification_content`.
 
         :param jsonable: input to be parsed
         """
