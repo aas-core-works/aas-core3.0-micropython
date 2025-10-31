@@ -5269,22 +5269,22 @@ class _SetterForEmbeddedDataSpecification:
 
     def __init__(self):
 
-        self.data_specification_content = None
         self.data_specification = None
+        self.data_specification_content = None
 
     def ignore(self, jsonable):
 
         pass
+
+    def set_data_specification_from_jsonable(self, jsonable):
+
+        self.data_specification = reference_from_jsonable(jsonable)
 
     def set_data_specification_content_from_jsonable(self, jsonable):
 
         self.data_specification_content = data_specification_content_from_jsonable(
             jsonable
         )
-
-    def set_data_specification_from_jsonable(self, jsonable):
-
-        self.data_specification = reference_from_jsonable(jsonable)
 
 
 def embedded_data_specification_from_jsonable(
@@ -5307,18 +5307,18 @@ def embedded_data_specification_from_jsonable(
             exception.path._prepend(PropertySegment(jsonable_value, key))
             raise exception
 
-    if setter.data_specification_content is None:
-        raise DeserializationException(
-            "The required property 'dataSpecificationContent' is missing"
-        )
-
     if setter.data_specification is None:
         raise DeserializationException(
             "The required property 'dataSpecification' is missing"
         )
 
+    if setter.data_specification_content is None:
+        raise DeserializationException(
+            "The required property 'dataSpecificationContent' is missing"
+        )
+
     return aas_types.EmbeddedDataSpecification(
-        setter.data_specification_content, setter.data_specification
+        setter.data_specification, setter.data_specification_content
     )
 
 
@@ -6400,8 +6400,8 @@ _DATA_SPECIFICATION_CONTENT_FROM_JSONABLE_DISPATCH = {
 
 
 _SETTER_MAP_FOR_EMBEDDED_DATA_SPECIFICATION = {
-    "dataSpecificationContent": _SetterForEmbeddedDataSpecification.set_data_specification_content_from_jsonable,
     "dataSpecification": _SetterForEmbeddedDataSpecification.set_data_specification_from_jsonable,
+    "dataSpecificationContent": _SetterForEmbeddedDataSpecification.set_data_specification_content_from_jsonable,
     "modelType": _SetterForEmbeddedDataSpecification.ignore,
 }
 
@@ -7564,11 +7564,11 @@ class _Serializer(aas_types.AbstractTransformer):
 
         jsonable = dict()
 
+        jsonable["dataSpecification"] = self.transform(that.data_specification)
+
         jsonable["dataSpecificationContent"] = self.transform(
             that.data_specification_content
         )
-
-        jsonable["dataSpecification"] = self.transform(that.data_specification)
 
         return jsonable
 

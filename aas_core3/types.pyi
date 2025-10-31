@@ -3550,11 +3550,11 @@ class DataSpecificationContent(Class):
 class EmbeddedDataSpecification(Class):
     """Embed the content of a data specification."""
 
-    #: Actual content of the data specification
-    data_specification_content: "DataSpecificationContent"
-
     #: Reference to the data specification
     data_specification: "Reference"
+
+    #: Actual content of the data specification
+    data_specification_content: "DataSpecificationContent"
 
     def descend_once(self) -> Iterator[Class]:
         """
@@ -3600,8 +3600,8 @@ class EmbeddedDataSpecification(Class):
 
     def __init__(
         self,
-        data_specification_content: "DataSpecificationContent",
         data_specification: "Reference",
+        data_specification_content: "DataSpecificationContent",
     ) -> None:
         """Initialize with the given values."""
         ...
