@@ -12,6 +12,101 @@ import aas_core3.types as aas_types
 NAMESPACE = "https://admin-shell.io/aas/3/0"
 
 
+def from_iterparse(iterator):
+
+    next_event_element = next(iterator, None)
+    if next_event_element is None:
+        raise DeserializationException(
+            "Expected the start element of an instance, but got the end-of-input"
+        )
+
+    next_event, next_element = next_event_element
+    if next_event != "start":
+        raise DeserializationException(
+            f"Expected the start element of an instance, but got event {next_event} and element {next_element.tag}"
+        )
+
+    try:
+        return _read_as_element(next_element, iterator)
+    except DeserializationException as exception:
+        exception.path._prepend(ElementSegment(next_element))
+        raise exception
+
+
+def from_stream(stream, has_iterparse=xml.etree.ElementTree):
+
+    iterator = has_iterparse.iterparse(stream, ["start", "end"])
+    return from_iterparse(_with_elements_cleared_after_yield(iterator))
+
+
+def from_file(path, has_iterparse=xml.etree.ElementTree):
+
+    with open(os.fspath(path), "rt", encoding="utf-8") as fid:
+        iterator = has_iterparse.iterparse(fid, ["start", "end"])
+        return from_iterparse(_with_elements_cleared_after_yield(iterator))
+
+
+def from_str(text, has_iterparse=xml.etree.ElementTree):
+
+    iterator = has_iterparse.iterparse(io.StringIO(text), ["start", "end"])
+    return from_iterparse(_with_elements_cleared_after_yield(iterator))
+
+
+def _read_as_element(element, iterator):
+
+    tag_wo_ns = _parse_element_tag(element)
+    read_as_sequence = _GENERAL_DISPATCH.get(tag_wo_ns, None)
+
+    if read_as_sequence is None:
+        raise DeserializationException(
+            f"Expected the element tag to be a valid model type of a concrete instance, but got tag {tag_wo_ns}"
+        )
+
+    return read_as_sequence(element, iterator)
+
+
+_GENERAL_DISPATCH = {
+    "extension": _read_extension_as_sequence,
+    "administrativeInformation": _read_administrative_information_as_sequence,
+    "qualifier": _read_qualifier_as_sequence,
+    "assetAdministrationShell": _read_asset_administration_shell_as_sequence,
+    "assetInformation": _read_asset_information_as_sequence,
+    "resource": _read_resource_as_sequence,
+    "specificAssetId": _read_specific_asset_id_as_sequence,
+    "submodel": _read_submodel_as_sequence,
+    "relationshipElement": _read_relationship_element_as_sequence,
+    "submodelElementList": _read_submodel_element_list_as_sequence,
+    "submodelElementCollection": _read_submodel_element_collection_as_sequence,
+    "property": _read_property_as_sequence,
+    "multiLanguageProperty": _read_multi_language_property_as_sequence,
+    "range": _read_range_as_sequence,
+    "referenceElement": _read_reference_element_as_sequence,
+    "blob": _read_blob_as_sequence,
+    "file": _read_file_as_sequence,
+    "annotatedRelationshipElement": _read_annotated_relationship_element_as_sequence,
+    "entity": _read_entity_as_sequence,
+    "eventPayload": _read_event_payload_as_sequence,
+    "basicEventElement": _read_basic_event_element_as_sequence,
+    "operation": _read_operation_as_sequence,
+    "operationVariable": _read_operation_variable_as_sequence,
+    "capability": _read_capability_as_sequence,
+    "conceptDescription": _read_concept_description_as_sequence,
+    "reference": _read_reference_as_sequence,
+    "key": _read_key_as_sequence,
+    "langStringNameType": _read_lang_string_name_type_as_sequence,
+    "langStringTextType": _read_lang_string_text_type_as_sequence,
+    "environment": _read_environment_as_sequence,
+    "embeddedDataSpecification": _read_embedded_data_specification_as_sequence,
+    "levelType": _read_level_type_as_sequence,
+    "valueReferencePair": _read_value_reference_pair_as_sequence,
+    "valueList": _read_value_list_as_sequence,
+    "langStringPreferredNameTypeIec61360": _read_lang_string_preferred_name_type_iec_61360_as_sequence,
+    "langStringShortNameTypeIec61360": _read_lang_string_short_name_type_iec_61360_as_sequence,
+    "langStringDefinitionTypeIec61360": _read_lang_string_definition_type_iec_61360_as_sequence,
+    "dataSpecificationIec61360": _read_data_specification_iec_61360_as_sequence,
+}
+
+
 class _Serializer(aas_types.AbstractVisitor):
 
     def _write_first_start_element_with_namespace(self, name):

@@ -34,6 +34,166 @@ else:
 
 NAMESPACE = "https://admin-shell.io/aas/3/0"
 
+def from_iterparse(iterator: Iterator[Tuple[str, Element]]) -> aas_types.Class:
+    """
+    Read an instance from the :paramref:`iterator`.
+
+    The type of the instance is determined by the very first start element.
+
+    Example usage:
+
+    .. code-block::
+
+        import pathlib
+        import xml.etree.ElementTree as ET
+
+        import aas_core3.xmlization as aas_xmlization
+
+        path = pathlib.Path(...)
+        with path.open("rt") as fid:
+            iterator = ET.iterparse(
+                source=fid,
+                events=['start', 'end']
+            )
+            instance = aas_xmlization.from_iterparse(
+                iterator
+            )
+
+        # Do something with the ``instance``
+
+    :param iterator:
+        Input stream of ``(event, element)`` coming from
+        :py:func:`xml.etree.ElementTree.iterparse` with the argument
+        ``events=["start", "end"]``
+    :raise: :py:class:`DeserializationException` if unexpected input
+    :return:
+        Instance of :py:class:`.types.Class` read from the :paramref:`iterator`
+    """
+    ...
+
+def from_stream(
+    stream: TextIO, has_iterparse: HasIterparse = xml.etree.ElementTree
+) -> aas_types.Class:
+    """
+    Read an instance from the :paramref:`stream`.
+
+    The type of the instance is determined by the very first start element.
+
+    Example usage:
+
+    .. code-block::
+
+        import aas_core3.xmlization as aas_xmlization
+
+        with open_some_stream_over_network(...) as stream:
+            instance = aas_xmlization.from_stream(
+                stream
+            )
+
+        # Do something with the ``instance``
+
+    :param stream:
+        representing an instance in XML
+    :param has_iterparse:
+        Module containing ``iterparse`` function.
+
+        Default is to use :py:mod:`xml.etree.ElementTree` from the standard
+        library. If you have to deal with malicious input, consider using
+        a library such as `defusedxml.ElementTree`_.
+    :raise: :py:class:`DeserializationException` if unexpected input
+    :return:
+        Instance read from :paramref:`stream`
+    """
+    ...
+
+def from_file(
+    path: PathLike, has_iterparse: HasIterparse = xml.etree.ElementTree
+) -> aas_types.Class:
+    """
+    Read an instance from the file at the :paramref:`path`.
+
+    Example usage:
+
+    .. code-block::
+
+        import pathlib
+        import aas_core3.xmlization as aas_xmlization
+
+        path = pathlib.Path(...)
+        instance = aas_xmlization.from_file(
+            path
+        )
+
+        # Do something with the ``instance``
+
+    :param path:
+        to the file representing an instance in XML
+    :param has_iterparse:
+        Module containing ``iterparse`` function.
+
+        Default is to use :py:mod:`xml.etree.ElementTree` from the standard
+        library. If you have to deal with malicious input, consider using
+        a library such as `defusedxml.ElementTree`_.
+    :raise: :py:class:`DeserializationException` if unexpected input
+    :return:
+        Instance read from the file at :paramref:`path`
+    """
+    ...
+
+def from_str(
+    text: str, has_iterparse: HasIterparse = xml.etree.ElementTree
+) -> aas_types.Class:
+    """
+    Read an instance from the :paramref:`text`.
+
+    Example usage:
+
+    .. code-block::
+
+        import pathlib
+        import aas_core3.xmlization as aas_xmlization
+
+        text = "<...>...</...>"
+        instance = aas_xmlization.from_str(
+            text
+        )
+
+        # Do something with the ``instance``
+
+    :param text:
+        representing an instance in XML
+    :param has_iterparse:
+        Module containing ``iterparse`` function.
+
+        Default is to use :py:mod:`xml.etree.ElementTree` from the standard
+        library. If you have to deal with malicious input, consider using
+        a library such as `defusedxml.ElementTree`_.
+    :raise: :py:class:`DeserializationException` if unexpected input
+    :return:
+        Instance read from :paramref:`text`
+    """
+    ...
+
+def _read_as_element(
+    element: Element, iterator: Iterator[Tuple[str, Element]]
+) -> aas_types.Class:
+    """
+    Read an instance from :paramref:`iterator`, including the end element.
+
+    :param element: start element
+    :param iterator:
+        Input stream of ``(event, element)`` coming from
+        :py:func:`xml.etree.ElementTree.iterparse` with the argument
+        ``events=["start", "end"]``
+    :raise: :py:class:`DeserializationException` if unexpected input
+    :return: parsed instance
+    """
+    ...
+
+_GENERAL_DISPATCH: Mapping[
+    str, Callable[[Element, Iterator[Tuple[str, Element]]], aas_types.Class]
+]
+
 class _Serializer(aas_types.AbstractVisitor):
     """Encode instances as XML and write them to :py:attr:`~stream`."""
 
